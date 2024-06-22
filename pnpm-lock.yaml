@@ -51,27 +51,15 @@ importers:
       '@antfu/eslint-config':
         specifier: ^2.21.1
         version: 2.21.1(@eslint-react/eslint-plugin@1.5.16(eslint@9.5.0)(typescript@5.5.2))(@unocss/eslint-plugin@0.61.0(eslint@9.5.0)(typescript@5.5.2))(@vue/compiler-sfc@3.4.29)(eslint-plugin-react-hooks@4.6.2(eslint@9.5.0))(eslint-plugin-react-refresh@0.4.7(eslint@9.5.0))(eslint@9.5.0)(typescript@5.5.2)(vitest@1.6.0(@types/node@20.14.8)(@vitest/ui@1.6.0))
-      '@eslint-react/eslint-plugin':
-        specifier: ^1.5.16
-        version: 1.5.16(eslint@9.5.0)(typescript@5.5.2)
       '@types/react':
         specifier: ^18.3.3
         version: 18.3.3
       '@types/react-dom':
         specifier: ^18.3.0
         version: 18.3.0
-      '@typescript-eslint/eslint-plugin':
-        specifier: ^7.13.1
-        version: 7.13.1(@typescript-eslint/parser@7.13.1(eslint@9.5.0)(typescript@5.5.2))(eslint@9.5.0)(typescript@5.5.2)
-      '@typescript-eslint/parser':
-        specifier: ^7.13.1
-        version: 7.13.1(eslint@9.5.0)(typescript@5.5.2)
       '@vitejs/plugin-react':
         specifier: ^4.3.1
         version: 4.3.1(vite@5.3.1(@types/node@20.14.8))
-      typescript:
-        specifier: ^5.2.2
-        version: 5.5.2
       unocss:
         specifier: ^0.61.0
         version: 0.61.0(postcss@8.4.38)(rollup@4.18.0)(vite@5.3.1(@types/node@20.14.8))
@@ -4031,6 +4019,7 @@ snapshots:
       - eslint
       - supports-color
       - typescript
+    optional: true
 
   '@eslint-react/core@1.5.16(eslint@9.5.0)(typescript@5.5.2)':
     dependencies:
@@ -4051,6 +4040,7 @@ snapshots:
       - eslint
       - supports-color
       - typescript
+    optional: true
 
   '@eslint-react/eslint-plugin@1.5.16(eslint@9.5.0)(typescript@5.5.2)':
     dependencies:
@@ -4070,6 +4060,7 @@ snapshots:
       typescript: 5.5.2
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@eslint-react/jsx@1.5.16(eslint@9.5.0)(typescript@5.5.2)':
     dependencies:
@@ -4087,6 +4078,7 @@ snapshots:
       - eslint
       - supports-color
       - typescript
+    optional: true
 
   '@eslint-react/shared@1.5.16(eslint@9.5.0)(typescript@5.5.2)':
     dependencies:
@@ -4096,8 +4088,10 @@ snapshots:
       - eslint
       - supports-color
       - typescript
+    optional: true
 
-  '@eslint-react/tools@1.5.16': {}
+  '@eslint-react/tools@1.5.16':
+    optional: true
 
   '@eslint-react/types@1.5.16(eslint@9.5.0)(typescript@5.5.2)':
     dependencies:
@@ -4108,6 +4102,7 @@ snapshots:
       - eslint
       - supports-color
       - typescript
+    optional: true
 
   '@eslint-react/var@1.5.16(eslint@9.5.0)(typescript@5.5.2)':
     dependencies:
@@ -4123,6 +4118,7 @@ snapshots:
       - eslint
       - supports-color
       - typescript
+    optional: true
 
   '@eslint/config-array@0.16.0':
     dependencies:
@@ -5424,7 +5420,8 @@ snapshots:
 
   deep-is@0.1.4: {}
 
-  deepmerge-ts@7.0.3: {}
+  deepmerge-ts@7.0.3:
+    optional: true
 
   deepmerge@4.3.1: {}
 
@@ -5670,6 +5667,7 @@ snapshots:
       typescript: 5.5.2
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   eslint-plugin-react-dom@1.5.16(eslint@9.5.0)(typescript@5.5.2):
     dependencies:
@@ -5690,6 +5688,7 @@ snapshots:
       typescript: 5.5.2
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   eslint-plugin-react-hooks-extra@1.5.16(eslint@9.5.0)(typescript@5.5.2):
     dependencies:
@@ -5711,6 +5710,7 @@ snapshots:
       typescript: 5.5.2
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   eslint-plugin-react-hooks@4.6.2(eslint@9.5.0):
     dependencies:
@@ -5736,6 +5736,7 @@ snapshots:
       typescript: 5.5.2
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   eslint-plugin-react-refresh@0.4.7(eslint@9.5.0):
     dependencies:
@@ -6607,7 +6608,8 @@ snapshots:
 
   merge2@1.4.1: {}
 
-  micro-memoize@4.1.2: {}
+  micro-memoize@4.1.2:
+    optional: true
 
   micromark@2.11.4:
     dependencies:
@@ -7086,7 +7088,8 @@ snapshots:
 
   shebang-regex@3.0.0: {}
 
-  short-unique-id@5.2.0: {}
+  short-unique-id@5.2.0:
+    optional: true
 
   side-channel@1.0.6:
     dependencies:
@@ -7165,7 +7168,8 @@ snapshots:
 
   string-argv@0.3.2: {}
 
-  string-ts@2.1.1: {}
+  string-ts@2.1.1:
+    optional: true
 
   string-width@4.2.3:
     dependencies:
@@ -7344,7 +7348,8 @@ snapshots:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
-  ts-pattern@5.2.0: {}
+  ts-pattern@5.2.0:
+    optional: true
 
   tslib@2.6.3: {}
 
@@ -7441,7 +7446,8 @@ snapshots:
 
   v8-compile-cache-lib@3.0.1: {}
 
-  valibot@0.32.0: {}
+  valibot@0.32.0:
+    optional: true
 
   validate-npm-package-license@3.0.4:
     dependencies:
