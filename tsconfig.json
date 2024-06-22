@@ -1,12 +1,10 @@
-{
-    "compilerOptions": {
-        "target": "ES2020",
-        "outDir": "dist",
-        "module": "commonjs",
-        "declaration": true,
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "strict": true,
-        "skipLibCheck": true
+{ 
+  "references": [
+    {
+      "path": "./contract/tsconfig.json"
+    },
+    {
+      "path": "./app/tsconfig.json"
     }
+  ]
 }
