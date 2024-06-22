@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build:contract": "pnpm -C ./contract build",
+    "build:contract": "pnpm -C ./contract build --all",
     "test": "vitest"
   },
   "keywords": [],
