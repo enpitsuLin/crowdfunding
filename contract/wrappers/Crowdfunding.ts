@@ -1,1 +1,1 @@
-export * from '../build/Crowdfunding/tact_Crowdfunding';
+export * from '../build/Crowdfunding/tact_Crowdfunding'

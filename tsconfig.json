@@ -1,5 +1,4 @@
-{ 
-  "files": [],
+{
   "references": [
     {
       "path": "./contract/tsconfig.json"
@@ -10,5 +9,6 @@
     {
       "path": "./app/tsconfig.app.json"
     }
-  ]
+  ],
+  "files": []
 }

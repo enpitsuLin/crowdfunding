@@ -1,9 +1,9 @@
-import { toNano } from '@ton/core';
-import { CrowdfundingFactory } from '../wrappers/CrowdfundingFactory';
-import { NetworkProvider } from '@ton/blueprint';
+import { toNano } from '@ton/core'
+import type { NetworkProvider } from '@ton/blueprint'
+import { CrowdfundingFactory } from '../wrappers/CrowdfundingFactory'
 
 export async function run(provider: NetworkProvider) {
-  const crowdfundingFactory = provider.open(await CrowdfundingFactory.fromInit());
+  const crowdfundingFactory = provider.open(await CrowdfundingFactory.fromInit())
 
   await crowdfundingFactory.send(
     provider.sender(),
@@ -13,10 +13,10 @@ export async function run(provider: NetworkProvider) {
     {
       $$type: 'Deploy',
       queryId: 0n,
-    }
-  );
+    },
+  )
 
-  await provider.waitForDeploy(crowdfundingFactory.address);
+  await provider.waitForDeploy(crowdfundingFactory.address)
 
   // run methods on `crowdfundingFactory`
 }

@@ -1,5 +1,5 @@
-import { NetworkProvider } from '@ton/blueprint';
+import type { NetworkProvider } from '@ton/blueprint'
 
-export async function run(provider: NetworkProvider) {
-    throw new Error('to be implemented') 
+export async function run(_provider: NetworkProvider) {
+  throw new Error('to be implemented')
 }

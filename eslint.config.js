@@ -4,6 +4,6 @@ export default antfu(
   {
     react: true,
     unocss: true,
-    ignores: ["contract/build/*"]
+    ignores: ['contract/build/*'],
   },
 )
