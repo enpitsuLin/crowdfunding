@@ -5,6 +5,8 @@
         "start": "blueprint run",
         "build": "blueprint build"
     },
+    "main": "index.ts",
+    "types": "index.ts",
     "devDependencies": {
         "@ton/blueprint": "^0.21.0",
         "@ton/core": "~0",
