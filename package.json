@@ -1,15 +1,14 @@
 {
   "name": "crowdfunding",
+  "private": true,
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "crowdfunding dapp with its contract, run on TON",
   "scripts": {
     "build:contract": "pnpm -C ./contract build --all",
     "test": "vitest"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "enpitsulin <enpitsulin@gmail.com>",
+  "license": "MIT",
   "devDependencies": {
     "@vitest/ui": "^1.6.0",
     "typescript": "^5.4.5",
