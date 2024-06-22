@@ -3,16 +3,30 @@
   "private": true,
   "version": "1.0.0",
   "description": "crowdfunding dapp with its contract, run on TON",
+  "type": "module",
   "scripts": {
     "dev": "pnpm -C ./app dev",
     "build:contract": "pnpm -C ./contract build --all",
-    "test": "vitest"
+    "test": "vitest",
+    "lint": "pnpm -C ./app lint",
+    "prepare": "simple-git-hooks"
   },
   "author": "enpitsulin <enpitsulin@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@antfu/eslint-config": "^2.21.1",
+    "@unocss/eslint-plugin": "^0.61.0",
     "@vitest/ui": "^1.6.0",
+    "eslint": "^9.5.0",
+    "lint-staged": "^15.2.7",
+    "simple-git-hooks": "^2.11.1",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "app/*": "eslint --fix"
   }
 }
