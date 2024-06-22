@@ -3,25 +3,34 @@
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2020",
+    "jsx": "react-jsx",
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "moduleDetection": "force",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "skipLibCheck": true,
-
     /* Bundler mode */
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    "paths": {
+      "~/*": [
+        "./src/*"
+      ]
+    },
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "moduleDetection": "force",
-    "noEmit": true,
-    "jsx": "react-jsx",
-
+    "allowImportingTsExtensions": true,
     /* Linting */
     "strict": true,
+    "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noEmit": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }
