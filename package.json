@@ -4,12 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:contract": "pnpm -C ./contract build",
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "typescript": "^5.4.5"
+    "@vitest/ui": "^1.6.0",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
   }
 }

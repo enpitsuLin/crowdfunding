@@ -1,10 +1,14 @@
 { 
+  "files": [],
   "references": [
     {
       "path": "./contract/tsconfig.json"
     },
     {
-      "path": "./app/tsconfig.json"
+      "path": "./app/tsconfig.node.json"
+    },
+    {
+      "path": "./app/tsconfig.app.json"
     }
   ]
 }

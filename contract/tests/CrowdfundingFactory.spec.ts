@@ -1,8 +1,11 @@
-import { Blockchain, SandboxContract, TreasuryContract } from '@ton/sandbox';
 import { toNano } from '@ton/core';
+import { Blockchain, SandboxContract, TreasuryContract } from '@ton/sandbox';
+import { describe, expect, beforeEach, it } from 'vitest';
+
 import { CrowdfundingFactory } from '../wrappers/CrowdfundingFactory';
 import { getUnixTimestampNow } from './utils';
-import '@ton/test-utils';
+
+import './fixtures';
 
 const MIN_VALUE_TO_START = toNano('1');
 const MAX_DEADLINE = 365 * 24 * 60 * 60;
@@ -16,10 +19,9 @@ describe('CrowdfundingFactory', () => {
     beforeEach(async () => {
         blockchain = await Blockchain.create();
 
-        crowdfundingFactory = blockchain.openContract(await CrowdfundingFactory.fromInit());
-
         deployer = await blockchain.treasury('deployer');
-
+        
+        crowdfundingFactory = blockchain.openContract(await CrowdfundingFactory.fromInit());
         const deployResult = await crowdfundingFactory.send(
             deployer.getSender(),
             {
