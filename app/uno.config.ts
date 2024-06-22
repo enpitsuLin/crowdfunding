@@ -3,20 +3,16 @@ import {
   presetAttributify,
   presetIcons,
   presetUno,
-  transformerAttributifyJsx,
-  transformerDirectives,
-  transformerVariantGroup,
 } from 'unocss'
+
+import presetAnimations from 'unocss-preset-animations'
+import { presetShadcn } from 'unocss-preset-shadcn'
 
 export default defineConfig({
   presets: [
     presetUno(),
-    presetAttributify(),
     presetIcons(),
-  ],
-  transformers: [
-    transformerAttributifyJsx(),
-    transformerDirectives(),
-    transformerVariantGroup(),
+    presetAnimations(),
+    presetShadcn(),
   ],
 })
