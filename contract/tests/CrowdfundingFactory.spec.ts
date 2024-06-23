@@ -42,6 +42,13 @@ describe('crowdfundingFactory', () => {
     })
   })
 
+  it('should deploy crowdfunding contract', async () => {
+    const result = await startCrowdfunding()
+    expect(result.transactions).toHaveTransaction({
+      from: crowdfundingFactory.address
+    })
+  })
+
   it('increase seqno after creating the crowdfunding', async () => {
     let seqno: bigint = await crowdfundingFactory.getGetLastSeqno()
     expect(seqno).toEqual(0n)
@@ -94,8 +101,8 @@ describe('crowdfundingFactory', () => {
     expect(seqno).toEqual(0n)
   })
 
-  async function startCrowdfunding() {
-    await crowdfundingFactory.send(
+  function startCrowdfunding() {
+    return crowdfundingFactory.send(
       deployer.getSender(),
       {
         value: MIN_VALUE_TO_START,
