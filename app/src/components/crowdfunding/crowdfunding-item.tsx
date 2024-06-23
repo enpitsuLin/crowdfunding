@@ -1,15 +1,16 @@
 import { CrowdfundingContract } from '@crowdfunding/contract'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import type { Address } from '@ton/core'
-import { fromNano } from '@ton/core'
+import { fromNano, toNano } from '@ton/core'
 import { useMemo } from 'react'
 import GaugeCircle from '~/components/magicui/gauge-circle'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '~/components/ui/tooltip'
 import { useContract } from '~/hooks/contract'
-import { useAccount } from '~/hooks/ton'
+import { useAccount, useSender } from '~/hooks/ton'
 import { CrowdfundingContributeDialog } from './crowdfunding-contribute-dialog'
+import { cn } from '~/lib/utils'
 
 export interface CrowdfundingItemProps {
   address: Address
@@ -17,6 +18,7 @@ export interface CrowdfundingItemProps {
 
 export function CrowdfundingItem(props: CrowdfundingItemProps) {
   const { address } = useAccount()
+  const sender = useSender()
 
   const contract = useContract(
     CrowdfundingContract.Crowdfunding,
@@ -38,12 +40,21 @@ export function CrowdfundingItem(props: CrowdfundingItemProps) {
     enabled: !!infoQuery.data?.currentContribution && !!infoQuery.data?.params.targetContribution && infoQuery.data?.currentContribution > infoQuery.data?.params.targetContribution
   })
 
+  const refundMutate = useMutation({
+    mutationKey: ['crowdfunding-refund', contract.address.toString()],
+    mutationFn: () => {
+      return contract.send(sender, { value: toNano('0.01') }, 'refund')
+    },
+  })
+
   const deadline = useMemo(() => {
     if (!infoQuery.data?.params.deadline) {
       return new Date()
     }
     return new Date(Number(infoQuery.data.params.deadline * 1000n))
   }, [infoQuery.data])
+
+  const isDeadlineExceeded = +deadline < Date.now()
 
   if (infoQuery.isLoading)
     return <div>loading...</div>
@@ -58,7 +69,7 @@ export function CrowdfundingItem(props: CrowdfundingItemProps) {
         <CardDescription className='flex justify-between items-center'>
           <div>
             Deadline:
-            <time dateTime={deadline.toISOString()}> {deadline.toISOString()}</time>
+            <time dateTime={deadline.toISOString()} className={cn(isDeadlineExceeded && 'c-rose')}> {deadline.toISOString()}</time>
           </div>
           <div>
             Target Contribution: {fromNano(infoQuery.data.params.targetContribution)} TON
@@ -88,8 +99,9 @@ export function CrowdfundingItem(props: CrowdfundingItemProps) {
         </TooltipProvider>
 
       </CardContent>
-      <CardFooter>
+      <CardFooter className='space-x-2'>
         <CrowdfundingContributeDialog address={props.address} />
+        {isDeadlineExceeded && <Button onClick={() => refundMutate.mutate()}>Refund</Button>}
         {address && ownerQuery.data && ownerQuery.data?.equals(address) && <Button>Withdraw</Button>}
       </CardFooter>
     </Card>
