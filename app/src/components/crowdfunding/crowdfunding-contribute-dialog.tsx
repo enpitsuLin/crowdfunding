@@ -1,35 +1,36 @@
-import { CrowdfundingContract } from "@crowdfunding/contract";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { Address, toNano } from "@ton/ton";
-import { useForm } from "react-hook-form";
-import { z } from 'zod';
+import { CrowdfundingContract } from '@crowdfunding/contract'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
+import type { Address } from '@ton/ton'
+import { toNano } from '@ton/ton'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { Button } from '../ui/button'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
+import { Input } from '../ui/input'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
-} from "~/components/ui/dialog";
-import { useContract } from "~/hooks/contract";
-import { useSender } from "~/hooks/ton";
-import { Button } from "../ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import { Input } from "../ui/input";
+  DialogTrigger,
+} from '~/components/ui/dialog'
+import { useContract } from '~/hooks/contract'
+import { useSender } from '~/hooks/ton'
 
 export interface CrowdfundingContributeDialogProps {
   address: Address
 }
 
 const contributeSchema = z.object({
-  value: z.string()
+  value: z.string(),
 })
 
 export function CrowdfundingContributeDialog(props: CrowdfundingContributeDialogProps) {
   const sender = useSender()
 
   const form = useForm<z.infer<typeof contributeSchema>>({
-    resolver: zodResolver(contributeSchema)
+    resolver: zodResolver(contributeSchema),
   })
 
   const contract = useContract(
@@ -43,9 +44,9 @@ export function CrowdfundingContributeDialog(props: CrowdfundingContributeDialog
       return contract.send(
         sender,
         { value },
-        'contribute'
+        'contribute',
       )
-    }
+    },
   })
 
   function onSubmit(form: z.infer<typeof contributeSchema>) {
@@ -60,7 +61,7 @@ export function CrowdfundingContributeDialog(props: CrowdfundingContributeDialog
         <DialogHeader>
           <DialogTitle>Contribute to this Project</DialogTitle>
         </DialogHeader>
-        <Form {...form} >
+        <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
             <FormField
               control={form.control}
@@ -86,5 +87,3 @@ export function CrowdfundingContributeDialog(props: CrowdfundingContributeDialog
 
   )
 }
-
-

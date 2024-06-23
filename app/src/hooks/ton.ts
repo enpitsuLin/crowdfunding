@@ -19,6 +19,8 @@ export function useAccount() {
 
   useEffect(() => {
     if (TonConnectUI) {
+      if (TonConnectUI.account?.address)
+        setAddress(Address.parse(TonConnectUI.account?.address))
       return TonConnectUI.onStatusChange(
         (wallet) => {
           if (wallet?.account.address)

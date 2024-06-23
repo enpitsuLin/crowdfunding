@@ -3,13 +3,13 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import type { Address } from '@ton/core'
 import { fromNano, toNano } from '@ton/core'
 import { useMemo } from 'react'
+import { CrowdfundingContributeDialog } from './crowdfunding-contribute-dialog'
 import GaugeCircle from '~/components/magicui/gauge-circle'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '~/components/ui/tooltip'
 import { useContract } from '~/hooks/contract'
 import { useAccount, useSender } from '~/hooks/ton'
-import { CrowdfundingContributeDialog } from './crowdfunding-contribute-dialog'
 import { cn } from '~/lib/utils'
 
 export interface CrowdfundingItemProps {
@@ -37,13 +37,20 @@ export function CrowdfundingItem(props: CrowdfundingItemProps) {
     queryFn: () => {
       return contract.getOwner()
     },
-    enabled: !!infoQuery.data?.currentContribution && !!infoQuery.data?.params.targetContribution && infoQuery.data?.currentContribution > infoQuery.data?.params.targetContribution
+    enabled: !!infoQuery.data?.currentContribution && !!infoQuery.data?.params.targetContribution && infoQuery.data?.currentContribution > infoQuery.data?.params.targetContribution,
   })
 
-  const refundMutate = useMutation({
+  const refundMutation = useMutation({
     mutationKey: ['crowdfunding-refund', contract.address.toString()],
     mutationFn: () => {
       return contract.send(sender, { value: toNano('0.01') }, 'refund')
+    },
+  })
+
+  const withdrawMutation = useMutation({
+    mutationKey: ['crowdfunding-withdraw', contract.address.toString()],
+    mutationFn: () => {
+      return contract.send(sender, { value: toNano('0.01') }, 'withdraw')
     },
   })
 
@@ -63,46 +70,66 @@ export function CrowdfundingItem(props: CrowdfundingItemProps) {
     return <div>something error...</div>
 
   return (
-    <Card className='max-w-200'>
-      <CardHeader  >
+    <Card className="max-w-200">
+      <CardHeader>
         <CardTitle>{infoQuery.data.params.title}</CardTitle>
-        <CardDescription className='flex justify-between items-center'>
+        <CardDescription className="flex items-center justify-between">
           <div>
             Deadline:
-            <time dateTime={deadline.toISOString()} className={cn(isDeadlineExceeded && 'c-rose')}> {deadline.toISOString()}</time>
+            <time dateTime={deadline.toISOString()} className={cn(isDeadlineExceeded && 'c-rose')}>
+              {' '}
+              {deadline.toISOString()}
+            </time>
           </div>
           <div>
-            Target Contribution: {fromNano(infoQuery.data.params.targetContribution)} TON
+            Target Contribution:
+            {' '}
+            {fromNano(infoQuery.data.params.targetContribution)}
+            {' '}
+            TON
           </div>
         </CardDescription>
       </CardHeader>
       <CardContent className="flex items-start justify-between gap-2">
-        <div className='flex-1'>
+        <div className="flex-1">
           <p>{infoQuery.data.params.description}</p>
         </div>
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger  >
+            <TooltipTrigger>
               <GaugeCircle
                 max={Number(fromNano(infoQuery.data.params.targetContribution))}
                 min={0}
                 value={Number(fromNano(infoQuery.data.currentContribution))}
                 gaugePrimaryColor="hsl(var(--primary))"
                 gaugeSecondaryColor="hsl(var(--border))"
-                className='size-20 text-base'
+                className="size-20 text-base"
               />
             </TooltipTrigger>
             <TooltipContent>
-              <p>Current Contribution: {fromNano(infoQuery.data.currentContribution)} TON</p>
+              <p>
+                Current Contribution:
+                {fromNano(infoQuery.data.currentContribution)}
+                {' '}
+                TON
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
 
       </CardContent>
-      <CardFooter className='space-x-2'>
+      <CardFooter className="space-x-2">
         <CrowdfundingContributeDialog address={props.address} />
-        {isDeadlineExceeded && <Button onClick={() => refundMutate.mutate()}>Refund</Button>}
-        {address && ownerQuery.data && ownerQuery.data?.equals(address) && <Button>Withdraw</Button>}
+        {isDeadlineExceeded && <Button onClick={() => refundMutation.mutate()}>Refund</Button>}
+        {address && ownerQuery.data && ownerQuery.data.equals(address) && (
+          <Button
+            onClick={() => {
+              withdrawMutation.mutate()
+            }}
+          >
+            Withdraw
+          </Button>
+        )}
       </CardFooter>
     </Card>
   )

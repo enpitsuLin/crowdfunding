@@ -1,11 +1,10 @@
 import { CrowdfundingFactoryContract } from '@crowdfunding/contract'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
 import { Address, toNano } from '@ton/ton'
 import { format } from 'date-fns'
 import type { SubmitHandler } from 'react-hook-form'
 import { useForm } from 'react-hook-form'
-import { CrowdfundingItem } from './crowdfunding/crowdfunding-item'
+import { CrowdfundindList } from './crowdfunding/crowdfunding-list'
 import { Button } from '~/components/ui/button'
 import { Calendar } from '~/components/ui/calendar'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
@@ -20,25 +19,18 @@ import { type CreateCrowdfundingParams, createCrowdfundingParamsSchema } from '~
 export function Body() {
   const contract = useContract(
     CrowdfundingFactoryContract.CrowdfundingFactory,
-    Address.parse('EQC-_Osh7y_GVVf2sIpxCHMu4TA13efZvotRnQXf7bn6xkqw'),
+    Address.parse('EQB6bFxAdkyK6NUKgDWxBPplM-emGwUPua8Rl0JauENvvQ6B'),
   )
 
   const form = useForm<CreateCrowdfundingParams>({
     resolver: zodResolver(createCrowdfundingParamsSchema),
     defaultValues: {
-      title: 'title',
-      description: 'description',
+      title: 'Crowdfunding Project',
+      description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vitae iste excepturi, officiis voluptate molestias commodi officia, vero repellat tempore quod neque harum ab consectetur sed, quas laborum ex. Totam, incidunt?',
       minContribution: '0.01',
       targetContribution: '10',
       deadline: new Date(),
       beneficiary: '0QCOe_aTbGyL7qzYA88Vlj-AagVt_FJ_9NNnOFeFq0B-i4zX',
-    },
-  })
-
-  const lastCrowdfundingQuery = useQuery({
-    queryKey: ['last-crowdfunding-item', contract.address.toString()],
-    queryFn: async () => {
-      return contract.getGetCrowdfundingAddress(0n)
     },
   })
 
@@ -107,18 +99,17 @@ export function Body() {
                 <FormControl>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <div className="flex">
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            'w-[280px] justify-start text-left font-normal',
-                            !field.value && 'text-muted-foreground',
-                          )}
-                        >
-                          <div className="i-mingcute:calendar-line mr-2 h-4 w-4" />
-                          {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
-                        </Button>
-                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className={cn(
+                          'flex w-[280px] justify-start text-left font-normal',
+                          !field.value && 'text-muted-foreground',
+                        )}
+                      >
+                        <div className="i-mingcute:calendar-line mr-2 h-4 w-4" />
+                        {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                      </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
                       <Calendar
@@ -189,11 +180,8 @@ export function Body() {
           <Button type="submit">Submit</Button>
         </form>
       </Form>
-      {lastCrowdfundingQuery.isLoading
-        ? <div>loading...</div>
-        : (
-          <CrowdfundingItem address={lastCrowdfundingQuery.data!} />
-        )}
+      <pre>{JSON.stringify(form.watch(), null, 2)}</pre>
+      <CrowdfundindList contract={contract} />
     </>
   )
 }
