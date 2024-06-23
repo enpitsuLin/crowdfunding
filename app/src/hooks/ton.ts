@@ -3,7 +3,7 @@ import { useTonConnectUI } from '@tonconnect/ui-react'
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 
 const client = new TonClient({
-  endpoint: 'https://toncenter.com/api/v2/jsonRPC',
+  endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
 })
 
 export function useTonClient() {

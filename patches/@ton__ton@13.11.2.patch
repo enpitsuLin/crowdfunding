@@ -1,0 +1,114 @@
+diff --git a/dist/client/TonClient.js b/dist/client/TonClient.js
+index cd70704308b82ddf561b772a3e9005786380f0bc..3ee3f56816970b6d99145a511cd1a83d1ec56709 100644
+--- a/dist/client/TonClient.js
++++ b/dist/client/TonClient.js
+@@ -269,18 +269,40 @@ class TonClient {
+     }
+ }
+ exports.TonClient = TonClient;
+-function parseStackEntry(s) {
+-    switch (s["@type"]) {
+-        case "tvm.stackEntryNumber":
+-            return { type: 'int', value: BigInt(s.number.number) };
+-        case "tvm.stackEntryCell":
+-            return { type: 'cell', cell: core_1.Cell.fromBase64(s.cell) };
++function parseObject(x) {
++    const typeName = x['@type'];
++    switch(typeName) {
++        case 'tvm.list':
++        case 'tvm.tuple':
++            return {
++                type: 'tuple',
++                items: x.elements.map(parseObject)
++            };
++        case 'tvm.cell':
++            return {
++              type: 'cell',
++              cell: core_1.Cell.fromBoc(Buffer.from(x.bytes, 'base64'))[0]
++            };
++        case 'tvm.stackEntryCell':
++            return parseObject(x.cell);
+         case 'tvm.stackEntryTuple':
+-            return { type: 'tuple', items: s.tuple.elements.map(parseStackEntry) };
+-        case 'tvm.stackEntryList':
+-            return { type: 'list', items: s.list.elements.map(parseStackEntry) };
++            return parseObject(x.tuple);
++        case 'tvm.stackEntryNumber':
++            return parseObject(x.number);
++        case 'tvm.numberDecimal':
++            return {
++              type: 'int',
++              value: BigInt(x.number)
++            };
++        case 'tvm.slice':
++            return {
++              type: 'slice',
++              cell: core_1.Cell.fromBoc(Buffer.from(x.bytes, 'base64'))[0]
++            };
++        case 'tvm.stackEntrySlice':
++            return parseObject(x.slice);
+         default:
+-            throw Error("Unsupported item type: " + s["@type"]);
++            throw Error('Unsupported item type: ' + typeName);
+     }
+ }
+ function parseStackItem(s) {
+@@ -288,43 +310,29 @@ function parseStackItem(s) {
+         let val = s[1];
+         if (val.startsWith('-')) {
+             return { type: 'int', value: -BigInt(val.slice(1)) };
+-        }
+-        else {
++        } else {
+             return { type: 'int', value: BigInt(val) };
+         }
+-    }
+-    else if (s[0] === 'null') {
++    } else if (s[0] === 'null') {
+         return { type: 'null' };
+-    }
+-    else if (s[0] === 'cell') {
++    } else if (s[0] === 'cell') {
+         return { type: 'cell', cell: core_1.Cell.fromBoc(Buffer.from(s[1].bytes, 'base64'))[0] };
+-    }
+-    else if (s[0] === 'slice') {
++    } else if (s[0] === 'slice') {
+         return { type: 'slice', cell: core_1.Cell.fromBoc(Buffer.from(s[1].bytes, 'base64'))[0] };
+-    }
+-    else if (s[0] === 'builder') {
+-        return { type: 'builder', cell: core_1.Cell.fromBoc(Buffer.from(s[1].bytes, 'base64'))[0] };
+-    }
+-    else if (s[0] === 'tuple' || s[0] === 'list') {
+-        // toncenter.com missbehaviour
+-        if (s[1].elements.length === 0) {
+-            return { type: 'null' };
+-        }
+-        return {
+-            type: s[0],
+-            items: s[1].elements.map(parseStackEntry)
+-        };
+-    }
+-    else {
+-        throw Error('Unsupported stack item type: ' + s[0]);
++    } else if (s[0] === 'builder') {
++        return { type: 'builder', cell: core_1.fromBoc(Buffer.from(s[1].bytes, 'base64'))[0] };
++    } else if (s[0] === 'tuple' || s[0] === 'list') {
++        return { type: 'tuple', items: s[1].elements.map(parseObject) };
++    } else {
++        throw Error('Unsupported stack item type: ' + s[0])
+     }
+ }
+ function parseStack(src) {
+-    let stack = [];
+-    for (let s of src) {
+-        stack.push(parseStackItem(s));
+-    }
+-    return new core_1.TupleReader(stack);
++let stack = [];
++for (let s of src) {
++    stack.push(parseStackItem(s));
++}
++return new core_1.TupleReader(stack);
+ }
+ function createProvider(client, address, init) {
+     return {

@@ -13,9 +13,12 @@
   "dependencies": {
     "@crowdfunding/contract": "workspace:*",
     "@hookform/resolvers": "^3.6.0",
+    "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-popover": "^1.1.1",
     "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-tooltip": "^1.1.1",
+    "@tanstack/react-query": "^5.45.1",
     "@ton/core": "~0",
     "@ton/ton": "^13.11.1",
     "@tonconnect/ui-react": "^2.0.5",

@@ -28,5 +28,10 @@
   },
   "lint-staged": {
     "app/*": "eslint --fix"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@ton/ton@13.11.2": "patches/@ton__ton@13.11.2.patch"
+    }
   }
 }
