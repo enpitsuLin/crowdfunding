@@ -1,24 +1,28 @@
+import type { Cell, Transaction } from '@ton/core'
+import { Address, Slice } from '@ton/core'
+import { Blockchain } from '@ton/sandbox'
 import type { FlatTransactionComparable } from '@ton/test-utils/dist/test/transaction'
 import { compareTransaction, flattenTransaction } from '@ton/test-utils/dist/test/transaction'
-import type { Cell } from '@ton/core'
-import { Address, Slice } from '@ton/core'
-import { expect } from 'vitest'
+import { beforeEach, expect } from 'vitest'
+
+beforeEach(async (ctx) => {
+  ctx.blockchain = await Blockchain.create()
+})
 
 expect.extend({
-  toHaveTransaction(received, expected) {
+  toHaveTransaction(received, expected: FlatTransactionComparable) {
     const { isNot } = this
     if (Array.isArray(received)) {
-      const ret = received.find(tx => compareTransaction(flattenTransaction(tx), expected))
-      const flat = flattenTransaction(ret)
+      const ret = (received as Transaction[]).find(tx => compareTransaction(flattenTransaction(tx), expected))
       return {
         pass: !!ret,
-        message: () => `Expected ${flat} ${isNot ? 'NOT' : ''} to match pattern ${expected}${isNot ? ', but it does' : ''}`,
+        message: () => `Expected ${received} ${!isNot ? 'NOT ' : ' '}to match pattern ${JSON.stringify(expected)}${isNot ? ', but it does' : ''}`,
       }
     }
     const flat = flattenTransaction(received)
     return {
       pass: compareTransaction(received, expected),
-      message: () => `Expected ${flat} ${isNot ? 'NOT' : ''} to match pattern ${expected}${isNot ? ', but it does' : ''}`,
+      message: () => `Expected ${flat} ${isNot ? 'NOT' : ''} to match pattern ${JSON.stringify(expected)}${isNot ? ', but it does' : ''}`,
     }
   },
   toHaveCell(received, expected) {
@@ -66,4 +70,7 @@ interface CustomMatchers<R = unknown> {
 declare module 'vitest' {
   interface Assertion<T = any> extends CustomMatchers<T> { }
   interface AsymmetricMatchersContaining extends CustomMatchers { }
+  export interface TestContext {
+    blockchain: Blockchain
+  }
 }
