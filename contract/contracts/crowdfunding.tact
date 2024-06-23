@@ -21,14 +21,14 @@ struct CrowdfundingInfo {
 }
 
 contract Crowdfunding with Ownable {
+    master: Address;
     owner: Address;
-    seqno: Int as uint256;
     params: CrowdfundingParams;
     contributors: map<Address, Int>;
 
-    init(factory: Address, seqno: Int) {
-        self.owner = factory;
-        self.seqno = seqno;
+    init(master: Address, owner: Address) {
+        self.master = master;
+        self.owner = owner; 
         self.params = CrowdfundingParams{
             title: "",
             description: "",

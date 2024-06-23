@@ -5,8 +5,6 @@ contract CrowdfundingFactory with Deployable {
     const MIN_VALUE_TO_START: Int = ton("1.0");
     const MAX_DEADLINE: Int = 365 * 24 * 60 * 60; // 1 year
 
-    seqno: Int as uint256 = 0;
-
     init() {
     }
 
@@ -16,10 +14,11 @@ contract CrowdfundingFactory with Deployable {
         require(ctx.value >= self.MIN_VALUE_TO_START, "Not enough funds to start crowdfunding");
         require(msg.deadline - now() <= self.MAX_DEADLINE, "Deadline is too far in the future");
 
-        let initCrowdfunding: StateInit = initOf Crowdfunding(myAddress(), self.seqno);
+        let creator: Address = sender();
+        let initCrowdfunding: StateInit = self.getCrowdfundingInit(creator);
         let addressCrowdfunding: Address = contractAddress(initCrowdfunding);
-        let start: StartCrowdfunding = StartCrowdfunding{
-            creator: sender(),
+        let start: StartCrowdfunding = StartCrowdfunding {
+            creator,
             params: msg
         };
 
@@ -32,15 +31,14 @@ contract CrowdfundingFactory with Deployable {
             data: initCrowdfunding.data,
             body: start.toCell()
         });
-
-        self.seqno = self.seqno + 1;
     }
 
-    get fun getLastSeqno(): Int {
-        return self.seqno;
+    fun getCrowdfundingInit(address: Address): StateInit {
+        return initOf Crowdfunding(myAddress(), address);
     }
 
-    get fun getCrowdfundingAddress(seqno: Int): Address {
-        return contractAddress(initOf Crowdfunding(myAddress(), seqno));
+    get fun contract_address(owner: Address): Address {
+        let winit: StateInit = self.getCrowdfundingInit(owner);
+        return contractAddress(winit);
     }
 }

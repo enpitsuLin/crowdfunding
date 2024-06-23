@@ -5,7 +5,8 @@
   "types": "index.ts",
   "scripts": {
     "start": "blueprint run",
-    "build": "blueprint build"
+    "build": "blueprint build CrowdfundingFactory",
+    "test": "vitest"
   },
   "devDependencies": {
     "@ton/blueprint": "^0.21.0",

@@ -1,16 +1,18 @@
-import { Address, fromNano, toNano } from '@ton/core'
+import { fromNano, toNano } from '@ton/core'
 import type { SandboxContract, TreasuryContract } from '@ton/sandbox'
 import { Blockchain } from '@ton/sandbox'
 import { beforeEach, describe, expect, it } from 'vitest'
 
+import { compareTransaction, flattenTransaction } from '@ton/test-utils/dist/test/transaction'
 import { Crowdfunding } from '../wrappers/Crowdfunding'
 import { getUnixTimestampNow } from './utils'
-import { compareTransaction, flattenTransaction } from '@ton/test-utils/dist/test/transaction'
 
 import './fixtures'
+import { CrowdfundingFactory } from '../wrappers/CrowdfundingFactory'
 
 describe('crowdfunding', () => {
   let blockchain: Blockchain
+  let masterContract: SandboxContract<CrowdfundingFactory>
   let crowdfunding: SandboxContract<Crowdfunding>
   let deployer: SandboxContract<TreasuryContract>
 
@@ -19,7 +21,14 @@ describe('crowdfunding', () => {
 
     deployer = await blockchain.treasury('deployer')
 
-    crowdfunding = blockchain.openContract(await Crowdfunding.fromInit(deployer.getSender().address, 0n))
+    masterContract = blockchain.openContract(await CrowdfundingFactory.fromInit())
+    
+    crowdfunding = blockchain.openContract(
+      await Crowdfunding.fromInit(
+        masterContract.address,
+        deployer.getSender().address
+      )
+    )
 
     const deployResult = await crowdfunding.send(
       deployer.getSender(),
@@ -113,7 +122,7 @@ describe('crowdfunding', () => {
       from: crowdfunding.address,
       to: deployer.address
     })
-    
+
     expect(afterWithdrawBalance).toBeGreaterThan(beforeWithdrawBalance)
   })
 })
