@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import { Crowdfunding } from '../wrappers/Crowdfunding'
 import { getUnixTimestampNow } from './utils'
-import { flattenTransaction } from '@ton/test-utils/dist/test/transaction'
+import { compareTransaction, flattenTransaction } from '@ton/test-utils/dist/test/transaction'
 
 import './fixtures'
 
@@ -57,13 +57,13 @@ describe('crowdfunding', () => {
   })
 
   it('should receive contribute work properly', async () => {
+    const contributor = (await blockchain.createWallets(1)).at(0)!
+
     const beforeInfo = await crowdfunding.getInfo()
     const beforeContribution = Number(fromNano(beforeInfo.currentContribution))
     expect(beforeContribution)
 
-    const contributor = blockchain.sender(Address.parse('0QCOe_aTbGyL7qzYA88Vlj-AagVt_FJ_9NNnOFeFq0B-i4zX'))
-
-    await crowdfunding.send(contributor, { value: toNano('1') }, 'contribute')
+    await crowdfunding.send(contributor.getSender(), { value: toNano('1') }, 'contribute')
 
     const afterInfo = await crowdfunding.getInfo()
     const afterContribution = Number(fromNano(afterInfo.currentContribution))
@@ -71,18 +71,22 @@ describe('crowdfunding', () => {
     expect(afterContribution).greaterThan(beforeContribution)
   })
 
-  it('balance changes should equals', async () => {
+  it('balance changes should equals after contributed', async () => {
+    const contributor = (await blockchain.createWallets(1)).at(0)!
+
     const beforeInfo = await crowdfunding.getInfo()
 
-    const contributor = blockchain.sender(Address.parse('0QCOe_aTbGyL7qzYA88Vlj-AagVt_FJ_9NNnOFeFq0B-i4zX'))
+    const beforeBalance = await contributor.getBalance()
+    expect(beforeBalance)
 
-    const result = await crowdfunding.send(contributor, { value: toNano('1') }, 'contribute')
+    const result = await crowdfunding.send(contributor.getSender(), { value: toNano('1') }, 'contribute')
 
     expect(result.transactions).toHaveTransaction({ from: contributor.address })
 
-    expect(result.transactions).toHaveLength(1)
+    const afterBalance = await contributor.getBalance()
+    expect(afterBalance).toBeLessThan(beforeBalance)
 
-    const flat = flattenTransaction(result.transactions.at(0)!)
+    const flat = flattenTransaction(result.transactions.find(tx => compareTransaction(flattenTransaction(tx), { from: contributor.address }))!)
 
     expect(flat.value)
     expect(flat.totalFees)
@@ -91,5 +95,25 @@ describe('crowdfunding', () => {
     const afterInfo = await crowdfunding.getInfo()
 
     expect(fromNano(flat.value! - flat.totalFees! + beforeInfo.currentContribution)).toEqual(fromNano(afterInfo.currentContribution))
+  })
+
+  it('deployer can withdraw if contribution reach the goal', async () => {
+    const contributor = (await blockchain.createWallets(1)).at(0)!
+
+    await crowdfunding.send(contributor.getSender(), { value: toNano('10') }, 'contribute')
+    const info = await crowdfunding.getInfo()
+
+    expect(info.currentContribution).toBeGreaterThan(info.params.targetContribution)
+
+    const beforeWithdrawBalance = await deployer.getBalance()
+    const result = await crowdfunding.send(deployer.getSender(), { value: toNano('0.1') }, 'withdraw')
+    const afterWithdrawBalance = await deployer.getBalance()
+
+    expect(result.transactions).toHaveTransaction({
+      from: crowdfunding.address,
+      to: deployer.address
+    })
+    
+    expect(afterWithdrawBalance).toBeGreaterThan(beforeWithdrawBalance)
   })
 })
