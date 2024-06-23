@@ -63,15 +63,22 @@ describe('crowdfunding', () => {
 
     const contributor = blockchain.sender(Address.parse('0QCOe_aTbGyL7qzYA88Vlj-AagVt_FJ_9NNnOFeFq0B-i4zX'))
 
-    const result = await crowdfunding.send(
-      contributor,
-      { value: toNano('1') },
-      'contribute'
-    )
+    await crowdfunding.send(contributor, { value: toNano('1') }, 'contribute')
 
-    expect(result.transactions).toHaveTransaction({
-      from: contributor.address
-    })
+    const afterInfo = await crowdfunding.getInfo()
+    const afterContribution = Number(fromNano(afterInfo.currentContribution))
+
+    expect(afterContribution).greaterThan(beforeContribution)
+  })
+
+  it('balance changes should equals', async () => {
+    const beforeInfo = await crowdfunding.getInfo()
+
+    const contributor = blockchain.sender(Address.parse('0QCOe_aTbGyL7qzYA88Vlj-AagVt_FJ_9NNnOFeFq0B-i4zX'))
+
+    const result = await crowdfunding.send(contributor, { value: toNano('1') }, 'contribute')
+
+    expect(result.transactions).toHaveTransaction({ from: contributor.address })
 
     expect(result.transactions).toHaveLength(1)
 
@@ -82,9 +89,7 @@ describe('crowdfunding', () => {
     expect(fromNano(flat.value!)).toEqual('1')
 
     const afterInfo = await crowdfunding.getInfo()
-    const afterContribution = Number(fromNano(afterInfo.currentContribution))
 
     expect(fromNano(flat.value! - flat.totalFees! + beforeInfo.currentContribution)).toEqual(fromNano(afterInfo.currentContribution))
-    expect(afterContribution).greaterThan(beforeContribution)
   })
 })
