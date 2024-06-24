@@ -1,9 +1,9 @@
 import { fromNano, toNano } from '@ton/core'
 import type { Blockchain } from '@ton/sandbox'
 import { compareTransaction, flattenTransaction } from '@ton/test-utils/dist/test/transaction'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { Crowdfunding } from '../wrappers/Crowdfunding'
-import { getUnixTimestampNow } from './utils'
+import { getUnixTimestampNow, normalizeTranscations } from './utils'
 
 import './fixtures'
 
@@ -69,7 +69,7 @@ describe('deploy crowdfunding', () => {
 
 describe('crowdfunding Contribute flow', () => {
   it('receive contribute work properly', async ({ blockchain }) => {
-    const contributor = (await blockchain.createWallets(1)).at(0)!
+    const contributor = await blockchain.treasury('contributor')
     const { contract } = await createCrowdfundingProject(blockchain)
 
     const beforeInfo = await contract.getInfo()
@@ -85,7 +85,7 @@ describe('crowdfunding Contribute flow', () => {
   })
 
   it('balance changes should equals after contributed', async ({ blockchain }) => {
-    const contributor = (await blockchain.createWallets(1)).at(0)!
+    const contributor = await blockchain.treasury('contributor')
     const { contract } = await createCrowdfundingProject(blockchain)
 
     const beforeInfo = await contract.getInfo()
@@ -112,7 +112,7 @@ describe('crowdfunding Contribute flow', () => {
   })
 
   it('deployer can withdraw if contribution reach the goal', async ({ blockchain }) => {
-    const contributor = (await blockchain.createWallets(1)).at(0)!
+    const contributor = await blockchain.treasury('contributor')
     const { contract, deployer } = await createCrowdfundingProject(blockchain)
 
     await contract.send(contributor.getSender(), { value: toNano('10') }, 'contribute')
@@ -132,22 +132,34 @@ describe('crowdfunding Contribute flow', () => {
     expect(afterWithdrawBalance).toBeGreaterThan(beforeWithdrawBalance)
   })
 
-  it.skip('contributor can refund when it get dealine but not reach goal', async ({ blockchain }) => {
-    vi.useFakeTimers()
-    const contributor = (await blockchain.createWallets(1)).at(0)!
+  it('contributor can refund when it get dealine but not reach goal', async ({ blockchain }) => {
+    const contributor = await blockchain.treasury('contributor')
+
     const { contract } = await createCrowdfundingProject(blockchain)
 
+    await contract.send(contributor.getSender(), { value: toNano('5') }, 'contribute')
+
+    const balance = await contributor.getBalance()
+
+    expect((await contract.getContributors()).get(contributor.address)).toEqual(toNano('5'))
+
+    // mock expired
     const { params: { deadline } } = await contract.getInfo()
-    await contract.send(contributor.getSender(), { value: toNano('1') }, 'contribute')
+    blockchain.now = Number(deadline + (1n))
 
-    vi.setSystemTime(new Date((deadline * 1000n).toString()))
-
-    await contract.send(
+    const result = await contract.send(
       contributor.getSender(),
-      { value: toNano('1') },
+      { value: toNano('0.01') },
       'refund',
     )
-    vi.useRealTimers()
+
+    expect(result.transactions).toHaveTransaction({
+      from: contract.address,
+      to: contributor.address,
+      success: true,
+    })
+
+    expect(await contributor.getBalance()).toBeGreaterThan(balance)
   })
 })
 

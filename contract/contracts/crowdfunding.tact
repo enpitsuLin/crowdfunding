@@ -50,7 +50,7 @@ contract Crowdfunding with Ownable {
         require(ctx.value >= self.params.minContribution, "Contribution amount is too low");
         require(now() <= self.params.deadline, "Deadline exceeded");
 
-        let sender: Address = sender();
+        let sender: Address = ctx.sender;
 
         // get sender already contribution
         let senderContribution: Int? = self.contributors.get(sender);
@@ -85,7 +85,16 @@ contract Crowdfunding with Ownable {
         require(sc > 0, "Sender has already been refunded");
 
         self.contributors.set(sender, 0);
-        send(SendParameters{to: sender, value: sc, mode: SendIgnoreErrors});
+        send(SendParameters{
+            to: sender, 
+            value: sc,
+            mode: SendIgnoreErrors
+        });
+    }
+
+    get fun contributors(): map<Address, Int>{
+        let contributors: map<Address, Int> = self.contributors;
+        return contributors;
     }
 
     get fun info(): CrowdfundingInfo {
