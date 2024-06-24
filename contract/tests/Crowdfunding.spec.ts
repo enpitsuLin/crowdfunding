@@ -1,5 +1,5 @@
 import { fromNano, toNano } from '@ton/core'
-import { Blockchain } from '@ton/sandbox'
+import type { Blockchain } from '@ton/sandbox'
 import { compareTransaction, flattenTransaction } from '@ton/test-utils/dist/test/transaction'
 import { describe, expect, it, vi } from 'vitest'
 import { Crowdfunding } from '../wrappers/Crowdfunding'
@@ -7,7 +7,7 @@ import { getUnixTimestampNow } from './utils'
 
 import './fixtures'
 
-describe('Deploy crowdfunding', () => {
+describe('deploy crowdfunding', () => {
   it('deploy should be success', async ({ blockchain }) => {
     const deployer = await blockchain.treasury('deployer')
     const contract = blockchain.openContract(await Crowdfunding.fromInit(deployer.address, 0n))
@@ -15,18 +15,18 @@ describe('Deploy crowdfunding', () => {
       deployer.getSender(),
       { value: toNano('0.05') },
       {
-        $$type: "StartCrowdfunding",
+        $$type: 'StartCrowdfunding',
         creator: deployer.getSender().address,
         params: {
-          $$type: "CrowdfundingParams",
+          $$type: 'CrowdfundingParams',
           title: '',
           description: '',
           targetContribution: toNano('10'),
           minContribution: toNano('0.5'),
           deadline: BigInt(getUnixTimestampNow()),
           beneficiary: deployer.getSender().address,
-        }
-      }
+        },
+      },
     )
 
     expect(result.transactions).toHaveTransaction({
@@ -44,18 +44,18 @@ describe('Deploy crowdfunding', () => {
       deployer.getSender(),
       { value: toNano('0.0001') },
       {
-        $$type: "StartCrowdfunding",
+        $$type: 'StartCrowdfunding',
         creator: deployer.getSender().address,
         params: {
-          $$type: "CrowdfundingParams",
+          $$type: 'CrowdfundingParams',
           title: '',
           description: '',
           targetContribution: toNano('10'),
           minContribution: toNano('0.5'),
           deadline: BigInt(getUnixTimestampNow()),
           beneficiary: deployer.getSender().address,
-        }
-      }
+        },
+      },
     )
 
     expect(result.transactions).not.toHaveTransaction({
@@ -67,8 +67,7 @@ describe('Deploy crowdfunding', () => {
   })
 })
 
-describe('Crowdfunding Contribute flow', () => {
-
+describe('crowdfunding Contribute flow', () => {
   it('receive contribute work properly', async ({ blockchain }) => {
     const contributor = (await blockchain.createWallets(1)).at(0)!
     const { contract } = await createCrowdfundingProject(blockchain)
@@ -112,7 +111,6 @@ describe('Crowdfunding Contribute flow', () => {
     expect(fromNano(flat.value! - flat.totalFees! + beforeInfo.currentContribution)).toEqual(fromNano(afterInfo.currentContribution))
   })
 
-
   it('deployer can withdraw if contribution reach the goal', async ({ blockchain }) => {
     const contributor = (await blockchain.createWallets(1)).at(0)!
     const { contract, deployer } = await createCrowdfundingProject(blockchain)
@@ -128,7 +126,7 @@ describe('Crowdfunding Contribute flow', () => {
 
     expect(result.transactions).toHaveTransaction({
       from: contract.address,
-      to: deployer.address
+      to: deployer.address,
     })
 
     expect(afterWithdrawBalance).toBeGreaterThan(beforeWithdrawBalance)
@@ -147,12 +145,11 @@ describe('Crowdfunding Contribute flow', () => {
     await contract.send(
       contributor.getSender(),
       { value: toNano('1') },
-      'refund'
+      'refund',
     )
     vi.useRealTimers()
   })
 })
-
 
 async function createCrowdfundingProject(blockchain: Blockchain) {
   const deployer = await blockchain.treasury('deployer')
@@ -161,18 +158,18 @@ async function createCrowdfundingProject(blockchain: Blockchain) {
     deployer.getSender(),
     { value: toNano('0.05') },
     {
-      $$type: "StartCrowdfunding",
+      $$type: 'StartCrowdfunding',
       creator: deployer.getSender().address,
       params: {
-        $$type: "CrowdfundingParams",
+        $$type: 'CrowdfundingParams',
         title: 'Test Crowdfunding',
         description: 'A test Crowdfunding project',
         targetContribution: toNano('10'),
         minContribution: toNano('0.5'),
         deadline: BigInt(getUnixTimestampNow()),
         beneficiary: deployer.getSender().address,
-      }
-    }
+      },
+    },
   )
   return { contract, deployer }
 }

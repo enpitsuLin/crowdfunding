@@ -23,15 +23,15 @@
     "typescript": "5.4.5",
     "vitest": "^1.6.0"
   },
-  "simple-git-hooks": {
-    "pre-commit": "npx lint-staged"
-  },
-  "lint-staged": {
-    "app/*": "eslint --fix"
-  },
   "pnpm": {
     "patchedDependencies": {
       "@ton/ton@13.11.2": "patches/@ton__ton@13.11.2.patch"
     }
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "*": "eslint --fix"
   }
 }
