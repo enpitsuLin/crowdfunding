@@ -3,13 +3,10 @@ import type { EventAccountCreated } from '@ton/sandbox'
 import { flattenTransaction } from '@ton/test-utils/dist/test/transaction'
 import { describe, expect, it } from 'vitest'
 import { CrowdfundingFactory } from '../wrappers/CrowdfundingFactory'
+import { MAX_DEADLINE, MIN_VALUE_TO_START, ONE_DAY } from './constants'
 import { getUnixTimestampNow } from './utils'
 
 import './fixtures'
-
-const MIN_VALUE_TO_START = toNano('1')
-const MAX_DEADLINE = 365 * 24 * 60 * 60
-const ONE_DAY: number = 1 * 24 * 60 * 60
 
 describe('deploy crowdfundingFactory', () => {
   it('deploy should be success', async ({ blockchain }) => {

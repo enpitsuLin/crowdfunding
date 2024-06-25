@@ -6,7 +6,7 @@ contract CrowdfundingFactory with Deployable {
     const MAX_DEADLINE: Int = 365 * 24 * 60 * 60; // 1 year
 
     seqno: Int = 0;
-    crowdfundings :map<Int,Address>;
+    crowdfundings: map<Int,Address>;
 
     init() {
     }
@@ -21,15 +21,15 @@ contract CrowdfundingFactory with Deployable {
         let initCrowdfunding: StateInit = self.getCrowdfundingInit(self.seqno);
         let addressCrowdfunding: Address = contractAddress(initCrowdfunding);
         let start: StartCrowdfunding = StartCrowdfunding {
-            creator,
+            creator: creator,
             params: msg
         };
 
         send(SendParameters {
             to: addressCrowdfunding,
-            value: 0,
-            mode: SendRemainingValue,
-            bounce: false,
+            value: ton("0.05"),
+            mode: SendPayGasSeparately,
+            bounce: true,
             code: initCrowdfunding.code,
             data: initCrowdfunding.data,
             body: start.toCell()
@@ -38,6 +38,25 @@ contract CrowdfundingFactory with Deployable {
         self.crowdfundings.set(self.seqno, addressCrowdfunding);
 
         self.seqno += 1;
+    }
+
+    get fun balance(): Int{
+        return myBalance();
+    }
+    /**
+     * receive withdraw request then send targetContribution value to beneficiary
+     * 
+     * with pattern, contract's balance should increase slowly
+     */
+    receive(msg: SendCrowdfundingWithdraw){
+        send(SendParameters{
+            to: msg.to,
+            value: msg.params.targetContribution,
+            mode: SendIgnoreErrors | SendPayGasSeparately,
+        });
+        // TODO: maybe to save crowdfunding that already withdraw to map, because sub contract are destoryed(inactive) so they can't get the info in RPC.
+        // definitely need store all crowdfundings whether it's completed or not like now `self.crowdfundings`
+        // but it's cost a lot, how to improve this is a problem
     }
 
     fun getCrowdfundingInit(seqno: Int): StateInit {

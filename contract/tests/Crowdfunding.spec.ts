@@ -1,9 +1,11 @@
 import { fromNano, toNano } from '@ton/core'
-import type { Blockchain } from '@ton/sandbox'
+import type { Blockchain, EventAccountCreated } from '@ton/sandbox'
 import { compareTransaction, flattenTransaction } from '@ton/test-utils/dist/test/transaction'
 import { describe, expect, it } from 'vitest'
 import { Crowdfunding } from '../wrappers/Crowdfunding'
-import { getUnixTimestampNow, normalizeTranscations } from './utils'
+import { CrowdfundingFactory } from '../wrappers/CrowdfundingFactory'
+import { getUnixTimestampNow } from './utils'
+import { ONE_DAY } from './constants'
 
 import './fixtures'
 
@@ -73,6 +75,7 @@ describe('crowdfunding Contribute flow', () => {
     const { contract } = await createCrowdfundingProject(blockchain)
 
     const beforeInfo = await contract.getInfo()
+
     const beforeContribution = Number(fromNano(beforeInfo.currentContribution))
     expect(beforeContribution)
 
@@ -113,9 +116,9 @@ describe('crowdfunding Contribute flow', () => {
 
   it('deployer can withdraw if contribution reach the goal', async ({ blockchain }) => {
     const contributor = await blockchain.treasury('contributor')
-    const { contract, deployer } = await createCrowdfundingProject(blockchain)
+    const { masterContract, contract, deployer } = await createCrowdfundingProject(blockchain)
 
-    await contract.send(contributor.getSender(), { value: toNano('10') }, 'contribute')
+    await contract.send(contributor.getSender(), { value: toNano('20') }, 'contribute')
     const info = await contract.getInfo()
 
     expect(info.currentContribution).toBeGreaterThan(info.params.targetContribution)
@@ -125,8 +128,9 @@ describe('crowdfunding Contribute flow', () => {
     const afterWithdrawBalance = await deployer.getBalance()
 
     expect(result.transactions).toHaveTransaction({
-      from: contract.address,
+      from: masterContract.address,
       to: deployer.address,
+      value: info.params.targetContribution,
     })
 
     expect(afterWithdrawBalance).toBeGreaterThan(beforeWithdrawBalance)
@@ -165,23 +169,31 @@ describe('crowdfunding Contribute flow', () => {
 
 async function createCrowdfundingProject(blockchain: Blockchain) {
   const deployer = await blockchain.treasury('deployer')
-  const contract = blockchain.openContract(await Crowdfunding.fromInit(deployer.address, 0n))
-  await contract.send(
+
+  const masterContract = blockchain.openContract(await CrowdfundingFactory.fromInit())
+  await masterContract.send(
     deployer.getSender(),
-    { value: toNano('0.05') },
+    { value: toNano('1') },
+    { $$type: 'Deploy', queryId: 0n },
+  )
+
+  const result = await masterContract.send(
+    deployer.getSender(),
+    { value: toNano(2) },
     {
-      $$type: 'StartCrowdfunding',
-      creator: deployer.getSender().address,
-      params: {
-        $$type: 'CrowdfundingParams',
-        title: 'Test Crowdfunding',
-        description: 'A test Crowdfunding project',
-        targetContribution: toNano('10'),
-        minContribution: toNano('0.5'),
-        deadline: BigInt(getUnixTimestampNow()),
-        beneficiary: deployer.getSender().address,
-      },
+      $$type: 'CrowdfundingParams',
+      title: 'Test Crowdfunding',
+      description: 'A test Crowdfunding project',
+      minContribution: toNano('0.01'),
+      targetContribution: toNano('20'),
+      deadline: BigInt(getUnixTimestampNow() + ONE_DAY),
+      beneficiary: deployer.address,
     },
   )
-  return { contract, deployer }
+
+  const contractCreatedEvent = result.events.find((e): e is EventAccountCreated => e.type === 'account_created')!
+
+  const contract = blockchain.openContract(Crowdfunding.fromAddress(contractCreatedEvent.account))
+
+  return { masterContract, contract, deployer }
 }

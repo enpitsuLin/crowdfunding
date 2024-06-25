@@ -15,6 +15,11 @@ message StartCrowdfunding {
     params: CrowdfundingParams;
 }
 
+message SendCrowdfundingWithdraw {
+    to: Address;
+    params: CrowdfundingParams;
+}
+
 struct CrowdfundingInfo {
     params: CrowdfundingParams;
     currentContribution: Int;
@@ -22,11 +27,14 @@ struct CrowdfundingInfo {
 
 contract Crowdfunding with Ownable {
     owner: Address;
+    master: Address;
     params: CrowdfundingParams;
     contributors: map<Address, Int>;
 
     init(owner: Address, seqno: Int) {
         self.owner = owner; 
+        // initilizer are master contract by default
+        self.master = owner;
         self.params = CrowdfundingParams {
             title: "",
             description: "",
@@ -38,8 +46,10 @@ contract Crowdfunding with Ownable {
     }
 
     receive(msg: StartCrowdfunding) {
+        // start crowdfunding should require owner with is master contract now
         self.requireOwner();
 
+        // change owner to crowdfunding creator
         self.owner = msg.creator;
         self.params = msg.params;
     }
@@ -62,15 +72,21 @@ contract Crowdfunding with Ownable {
         }
     }
 
+    // send all balance to master contract that handle withdraw
     receive("withdraw"){
         self.requireOwner();
         require(myBalance() >= self.params.targetContribution, "Target contribution not reached");
 
-        send(SendParameters{
+        let withdraw: SendCrowdfundingWithdraw = SendCrowdfundingWithdraw{
             to: self.params.beneficiary,
+            params: self.params
+        };
+
+        send(SendParameters{
+            to: self.master,
             value: 0,
             mode: SendIgnoreErrors + SendDestroyIfZero + SendRemainingBalance,
-            bounce: true
+            body: withdraw.toCell()
         });
     }
 
