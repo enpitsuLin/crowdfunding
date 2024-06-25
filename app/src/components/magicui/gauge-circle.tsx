@@ -103,7 +103,7 @@ const GaugeCircle = forwardRef<HTMLDivElement, Props>(({
         data-current-value={currentPercent}
         className="absolute inset-0 m-auto h-fit w-fit animate-in select-none duration-[var(--transition-length)] delay-[var(--delay)] ease-linear fade-in"
       >
-        {currentPercent.toFixed(1)}
+        {currentPercent.toFixed(0)}
         %
       </span>
     </div>

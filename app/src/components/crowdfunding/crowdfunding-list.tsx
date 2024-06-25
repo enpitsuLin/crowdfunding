@@ -21,23 +21,12 @@ export function CrowdfundindList(props: CrowdfundindListProps) {
   if (crowdfundingsQuery.isLoading)
     return <div>loading..</div>
 
-  if (!crowdfundingsQuery.data || crowdfundingsQuery.isError) {
-    return (
-      <div>
-        something went wrong
-        <pre>{JSON.stringify(crowdfundingsQuery.error, null, 2)}</pre>
-      </div>
-    )
-  }
-
   return (
-    <ul className="flex flex-col gap-2 py-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 flex-col gap-2 py-4">
       {crowdfundingsQuery.data
         .map(address => (
-          <li key={address.toString()}>
-            <CrowdfundingItem address={address} />
-          </li>
+          <CrowdfundingItem address={address} key={address.toString()} />
         ))}
-    </ul>
+    </div>
   )
 }

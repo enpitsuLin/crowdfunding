@@ -68,7 +68,7 @@ export function CrowdfundingItem(props: CrowdfundingItemProps) {
     return <div>something error...</div>
 
   return (
-    <Card className="max-w-120">
+    <Card>
       <CardHeader>
         <CardTitle>
           {infoQuery.isLoading || !infoQuery.data
@@ -88,17 +88,18 @@ export function CrowdfundingItem(props: CrowdfundingItemProps) {
                 </time>
                 )}
           </div>
-          <div className="flex items-center gap-1">
+          <span className="flex items-center gap-1">
             <span>Target:</span>
-            {infoQuery.isLoading || !infoQuery.data
-              ? <Skeleton className="inline-block w-50px h-16px" />
-              : (
-                <span>
-                  {fromNano(infoQuery.data.params.targetContribution)}
-                  TON
-                </span>
-                )}
-          </div>
+            <span
+              className={cn({
+                'inline-block animate-pulse rounded-md bg-muted w-50px h-16px': infoQuery.isLoading || !infoQuery.data,
+              })}
+            >
+              {infoQuery.data?.params.targetContribution
+                ? `${fromNano(infoQuery.data?.params.targetContribution)}TON`
+                : ''}
+            </span>
+          </span>
         </CardDescription>
       </CardHeader>
       <CardContent className="flex items-start justify-between gap-2">
@@ -122,7 +123,7 @@ export function CrowdfundingItem(props: CrowdfundingItemProps) {
                 value={Number(fromNano(infoQuery.data?.currentContribution ?? 0n))}
                 gaugePrimaryColor="hsl(var(--primary))"
                 gaugeSecondaryColor="hsl(var(--border))"
-                className="size-18 text-base"
+                className="size-18 text-sm"
               />
             </TooltipTrigger>
             <TooltipContent>
@@ -139,7 +140,7 @@ export function CrowdfundingItem(props: CrowdfundingItemProps) {
       <CardFooter className="space-x-2">
         <CrowdfundingContributeDialog address={props.address} />
         {isDeadlineExceeded && <Button onClick={() => refundMutation.mutate()}>Refund</Button>}
-        {address && ownerQuery.data && ownerQuery.data.equals(address) && (
+        {address && !ownerQuery.isLoading && ownerQuery.data && ownerQuery.data.equals(address) && (
           <Button
             onClick={() => {
               withdrawMutation.mutate()
