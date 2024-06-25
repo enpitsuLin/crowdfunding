@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '~/comp
 import { useContract } from '~/hooks/contract'
 import { useAccount, useSender } from '~/hooks/ton'
 import { cn } from '~/lib/utils'
+import { Skeleton } from '~/components/ui/skeleton'
 
 export interface CrowdfundingItemProps {
   address: Address
@@ -63,52 +64,71 @@ export function CrowdfundingItem(props: CrowdfundingItemProps) {
 
   const isDeadlineExceeded = +deadline < Date.now()
 
-  if (infoQuery.isLoading)
-    return <div>loading...</div>
-
-  if (infoQuery.isError || !infoQuery.data)
+  if (infoQuery.isError)
     return <div>something error...</div>
 
   return (
-    <Card className="max-w-200">
+    <Card className="max-w-120">
       <CardHeader>
-        <CardTitle>{infoQuery.data.params.title}</CardTitle>
+        <CardTitle>
+          {infoQuery.isLoading || !infoQuery.data
+            ? <Skeleton className="inline-block w-100px h-16px" />
+            : (infoQuery.data?.params.title)}
+        </CardTitle>
         <CardDescription className="flex items-center justify-between">
-          <div>
-            Deadline:
-            <time dateTime={deadline.toISOString()} className={cn(isDeadlineExceeded && 'c-rose')}>
-
-              {deadline.toLocaleString('en-US', { timeZone: 'UTC' })}
-            </time>
+          <div className="flex items-center gap-1">
+            <span>
+              Deadline:
+            </span>
+            {infoQuery.isLoading
+              ? <Skeleton className="inline-block w-200px h-4" />
+              : (
+                <time dateTime={deadline.toISOString()} className={cn(isDeadlineExceeded && 'c-rose')}>
+                  {deadline.toLocaleString('en-US', { timeZone: 'UTC' })}
+                </time>
+                )}
           </div>
-          <div>
-            Target Contribution:
-            {fromNano(infoQuery.data.params.targetContribution)}
-            TON
+          <div className="flex items-center gap-1">
+            <span>Target:</span>
+            {infoQuery.isLoading || !infoQuery.data
+              ? <Skeleton className="inline-block w-50px h-16px" />
+              : (
+                <span>
+                  {fromNano(infoQuery.data.params.targetContribution)}
+                  TON
+                </span>
+                )}
           </div>
         </CardDescription>
       </CardHeader>
       <CardContent className="flex items-start justify-between gap-2">
         <div className="flex-1">
-          <p>{infoQuery.data.params.description}</p>
+          {infoQuery.isLoading || !infoQuery.data
+            ? (
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-60%" />
+              </div>
+              )
+            : <p className="line-clamp-3">{infoQuery.data?.params.description}</p>}
         </div>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
               <GaugeCircle
-                max={Number(fromNano(infoQuery.data.params.targetContribution))}
+                max={Number(fromNano(infoQuery.data?.params.targetContribution ?? 100n))}
                 min={0}
-                value={Number(fromNano(infoQuery.data.currentContribution))}
+                value={Number(fromNano(infoQuery.data?.currentContribution ?? 0n))}
                 gaugePrimaryColor="hsl(var(--primary))"
                 gaugeSecondaryColor="hsl(var(--border))"
-                className="size-20 text-base"
+                className="size-18 text-base"
               />
             </TooltipTrigger>
             <TooltipContent>
               <p>
                 Current Contribution:
-                {fromNano(infoQuery.data.currentContribution)}
-                {' '}
+                {fromNano(infoQuery.data?.currentContribution ?? 0n)}
                 TON
               </p>
             </TooltipContent>

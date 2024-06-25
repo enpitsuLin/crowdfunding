@@ -11,8 +11,8 @@ export function Body() {
 
   return (
     <main className="container mx-auto md:px-lg pb-20 px-4">
-      <CrowdfundingStartForm contract={contract} />
       <CrowdfundindList contract={contract} />
+      <CrowdfundingStartForm contract={contract} />
     </main>
   )
 }
