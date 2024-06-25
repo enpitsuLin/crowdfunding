@@ -77,15 +77,13 @@ export function CrowdfundingItem(props: CrowdfundingItemProps) {
           <div>
             Deadline:
             <time dateTime={deadline.toISOString()} className={cn(isDeadlineExceeded && 'c-rose')}>
-              {' '}
-              {deadline.toISOString()}
+
+              {deadline.toLocaleString('en-US', { timeZone: 'UTC' })}
             </time>
           </div>
           <div>
             Target Contribution:
-            {' '}
             {fromNano(infoQuery.data.params.targetContribution)}
-            {' '}
             TON
           </div>
         </CardDescription>

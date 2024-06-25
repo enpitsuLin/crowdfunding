@@ -5,7 +5,7 @@ import { AppProvider } from '~/components/provider'
 function App() {
   return (
     <AppProvider>
-      <Header></Header>
+      <Header />
       <Body />
     </AppProvider>
   )
