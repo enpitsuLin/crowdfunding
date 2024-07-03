@@ -24,7 +24,6 @@ struct CrowdfundingInfo {
     params: CrowdfundingParams;
     currentContribution: Int;
 }
-
 contract Crowdfunding with Ownable {
     owner: Address;
     master: Address;
@@ -32,7 +31,7 @@ contract Crowdfunding with Ownable {
     contributors: map<Address, Int>;
 
     init(owner: Address, seqno: Int) {
-        self.owner = owner; 
+        self.owner = owner;
         // initilizer are master contract by default
         self.master = owner;
         self.params = CrowdfundingParams {
@@ -41,7 +40,7 @@ contract Crowdfunding with Ownable {
             targetContribution: 0,
             minContribution: 0,
             deadline: 0,
-            beneficiary: myAddress()
+            beneficiary: myAddress(),
         };
     }
 
@@ -54,7 +53,7 @@ contract Crowdfunding with Ownable {
         self.params = msg.params;
     }
 
-    receive("contribute"){
+    receive("contribute") {
         let ctx: Context = context();
 
         require(ctx.value >= self.params.minContribution, "Contribution amount is too low");
@@ -64,6 +63,8 @@ contract Crowdfunding with Ownable {
 
         // get sender already contribution
         let senderContribution: Int? = self.contributors.get(sender);
+
+
         if (senderContribution == null) {
             self.contributors.set(sender, ctx.value);
         } else {
@@ -73,13 +74,13 @@ contract Crowdfunding with Ownable {
     }
 
     // send all balance to master contract that handle withdraw
-    receive("withdraw"){
+    receive("withdraw") {
         self.requireOwner();
         require(myBalance() >= self.params.targetContribution, "Target contribution not reached");
 
-        let withdraw: SendCrowdfundingWithdraw = SendCrowdfundingWithdraw{
+        let withdraw: SendCrowdfundingWithdraw = SendCrowdfundingWithdraw {
             to: self.params.beneficiary,
-            params: self.params
+            params: self.params,
         };
 
         send(SendParameters{
@@ -90,7 +91,7 @@ contract Crowdfunding with Ownable {
         });
     }
 
-    receive("refund"){
+    receive("refund") {
         require(now() > self.params.deadline, "Deadline not exceeded");
 
         let sender: Address = sender();
@@ -108,15 +109,15 @@ contract Crowdfunding with Ownable {
         });
     }
 
-    get fun contributors(): map<Address, Int>{
+    get fun contributors(): map<Address, Int> {
         let contributors: map<Address, Int> = self.contributors;
         return contributors;
     }
 
     get fun info(): CrowdfundingInfo {
-        return CrowdfundingInfo{
+        return CrowdfundingInfo {
             params: self.params,
-            currentContribution: myBalance()
+            currentContribution: myBalance(),
         };
     }
 }

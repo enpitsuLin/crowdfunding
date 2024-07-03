@@ -3,17 +3,17 @@ import "./crowdfunding.tact";
 
 contract CrowdfundingFactory with Deployable {
     const MIN_VALUE_TO_START: Int = ton("1.0");
-    const MAX_DEADLINE: Int = 365 * 24 * 60 * 60; // 1 year
+    const MAX_DEADLINE: Int = 365 * 24 * 60 * 60;// 1 year
 
     seqno: Int = 0;
-    crowdfundings: map<Int,Address>;
+    crowdfundings: map<Int, Address>;
 
     init() {
     }
 
     receive(msg: CrowdfundingParams) {
         let ctx: Context = context();
-        
+
         require(ctx.value >= self.MIN_VALUE_TO_START, "Not enough funds to start crowdfunding");
         require(msg.deadline - now() <= self.MAX_DEADLINE, "Deadline is too far in the future");
 
@@ -22,7 +22,7 @@ contract CrowdfundingFactory with Deployable {
         let addressCrowdfunding: Address = contractAddress(initCrowdfunding);
         let start: StartCrowdfunding = StartCrowdfunding {
             creator: creator,
-            params: msg
+            params: msg,
         };
 
         send(SendParameters {
@@ -40,7 +40,7 @@ contract CrowdfundingFactory with Deployable {
         self.seqno += 1;
     }
 
-    get fun balance(): Int{
+    get fun balance(): Int {
         return myBalance();
     }
     /**
@@ -48,7 +48,7 @@ contract CrowdfundingFactory with Deployable {
      * 
      * with pattern, contract's balance should increase slowly
      */
-    receive(msg: SendCrowdfundingWithdraw){
+    receive(msg: SendCrowdfundingWithdraw) {
         send(SendParameters{
             to: msg.to,
             value: msg.params.targetContribution,
@@ -63,7 +63,7 @@ contract CrowdfundingFactory with Deployable {
         return initOf Crowdfunding(myAddress(), seqno);
     }
 
-    get fun crowdfundings_map(): map<Int,Address> {
+    get fun crowdfundings_map(): map<Int, Address> {
         return self.crowdfundings;
     }
 

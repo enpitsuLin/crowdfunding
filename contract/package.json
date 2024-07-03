@@ -6,7 +6,8 @@
   "scripts": {
     "start": "blueprint run deployCrowdfundingFactory",
     "build": "blueprint build CrowdfundingFactory",
-    "test": "vitest"
+    "test": "vitest",
+    "prettier": "prettier"
   },
   "devDependencies": {
     "@ton/blueprint": "^0.21.0",
@@ -17,6 +18,7 @@
     "@ton/ton": "^13.11.2",
     "@types/node": "^20.14.8",
     "prettier": "^3.3.2",
+    "prettier-plugin-tact": "^0.1.5",
     "ts-node": "^10.9.2"
   }
 }
