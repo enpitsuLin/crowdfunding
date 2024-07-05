@@ -16,9 +16,9 @@
     "@ton/sandbox": "^0.20.0",
     "@ton/test-utils": "^0.4.2",
     "@ton/ton": "^13.11.2",
-    "@types/node": "^20.14.8",
+    "@types/node": "^20.14.9",
     "prettier": "^3.3.2",
-    "prettier-plugin-tact": "^0.1.5",
+    "prettier-plugin-tact": "^0.1.6",
     "ts-node": "^10.9.2"
   }
 }
