@@ -1,29 +1,7 @@
 import "@stdlib/deploy";
 import "@stdlib/ownable";
+import "./message.tact";
 
-message CrowdfundingParams {
-    title: String;
-    description: String;
-    targetContribution: Int;
-    minContribution: Int;
-    deadline: Int as uint32;
-    beneficiary: Address;
-}
-
-message StartCrowdfunding {
-    creator: Address;
-    params: CrowdfundingParams;
-}
-
-message SendCrowdfundingWithdraw {
-    to: Address;
-    params: CrowdfundingParams;
-}
-
-struct CrowdfundingInfo {
-    params: CrowdfundingParams;
-    currentContribution: Int;
-}
 contract Crowdfunding with Ownable {
     owner: Address;
     master: Address;

@@ -10,8 +10,8 @@ import './fixtures'
 
 describe('deploy crowdfundingFactory', () => {
   it('deploy should be success', async ({ blockchain }) => {
-    const contract = blockchain.openContract(await CrowdfundingFactory.fromInit())
     const deployer = await blockchain.treasury('deployer')
+    const contract = blockchain.openContract(await CrowdfundingFactory.fromInit(deployer.address))
 
     const result = await contract.send(
       deployer.getSender(),
@@ -28,8 +28,8 @@ describe('deploy crowdfundingFactory', () => {
   })
 
   it('deploy should be failed when fee too low', async ({ blockchain }) => {
-    const contract = blockchain.openContract(await CrowdfundingFactory.fromInit())
     const deployer = await blockchain.treasury('deployer')
+    const contract = blockchain.openContract(await CrowdfundingFactory.fromInit(deployer.address))
 
     const result = await contract.send(
       deployer.getSender(),
@@ -47,8 +47,8 @@ describe('deploy crowdfundingFactory', () => {
 
 describe('deploy child crowdfundingCollection contract', () => {
   it('should deploy success', async ({ blockchain }) => {
-    const contract = blockchain.openContract(await CrowdfundingFactory.fromInit())
     const deployer = await blockchain.treasury('deployer')
+    const contract = blockchain.openContract(await CrowdfundingFactory.fromInit(deployer.address))
 
     // Deploy master contract
     await contract.send(
@@ -85,8 +85,8 @@ describe('deploy child crowdfundingCollection contract', () => {
   })
 
   it('should deploy fail because not enough funds to start crowdfunding', async ({ blockchain }) => {
-    const contract = blockchain.openContract(await CrowdfundingFactory.fromInit())
     const deployer = await blockchain.treasury('deployer')
+    const contract = blockchain.openContract(await CrowdfundingFactory.fromInit(deployer.address))
 
     // Deploy master contract
     await contract.send(
@@ -120,8 +120,8 @@ describe('deploy child crowdfundingCollection contract', () => {
   })
 
   it('should deploy fail because deadline is too far in the future', async ({ blockchain }) => {
-    const contract = blockchain.openContract(await CrowdfundingFactory.fromInit())
     const deployer = await blockchain.treasury('deployer')
+    const contract = blockchain.openContract(await CrowdfundingFactory.fromInit(deployer.address))
 
     // Deploy master contract
     await contract.send(

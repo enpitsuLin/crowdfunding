@@ -170,7 +170,7 @@ describe('crowdfunding Contribute flow', () => {
 async function createCrowdfundingProject(blockchain: Blockchain) {
   const deployer = await blockchain.treasury('deployer')
 
-  const masterContract = blockchain.openContract(await CrowdfundingFactory.fromInit())
+  const masterContract = blockchain.openContract(await CrowdfundingFactory.fromInit(deployer.address))
   await masterContract.send(
     deployer.getSender(),
     { value: toNano('1') },

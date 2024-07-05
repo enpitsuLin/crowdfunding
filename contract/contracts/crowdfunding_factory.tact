@@ -7,8 +7,15 @@ contract CrowdfundingFactory with Deployable {
 
     seqno: Int = 0;
     crowdfundings: map<Int, Address>;
+    owner: Address;
 
-    init() {
+    init(owner: Address) {
+        self.owner = owner;
+    }
+
+    receive(msg: SetOwner) {
+        require(self.owner == sender(), "Access denied!");
+        self.owner = msg.to;
     }
 
     receive(msg: CrowdfundingParams) {
@@ -40,9 +47,6 @@ contract CrowdfundingFactory with Deployable {
         self.seqno += 1;
     }
 
-    get fun balance(): Int {
-        return myBalance();
-    }
     /**
      * receive withdraw request then send targetContribution value to beneficiary
      * 
@@ -57,6 +61,10 @@ contract CrowdfundingFactory with Deployable {
         // TODO: maybe to save crowdfunding that already withdraw to map, because sub contract are destoryed(inactive) so they can't get the info in RPC.
         // definitely need store all crowdfundings whether it's completed or not like now `self.crowdfundings`
         // but it's cost a lot, how to improve this is a problem
+    }
+
+    get fun balance(): Int {
+        return myBalance();
     }
 
     fun getCrowdfundingInit(seqno: Int): StateInit {
