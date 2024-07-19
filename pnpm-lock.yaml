@@ -165,8 +165,8 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
       prettier-plugin-tact:
-        specifier: ^0.1.6
-        version: 0.1.6
+        specifier: ^0.1.7
+        version: 0.1.7
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.14.9)(typescript@5.5.2)
@@ -3512,8 +3512,8 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  prettier-plugin-tact@0.1.6:
-    resolution: {integrity: sha512-AcZUwYOn+Ip4tvgMyzL+9qH/Y/GWy9wuHQdL0DGhqLkdLPCd0boc0NSviCNpkMVllt7nKXrwOTYQ61gdPmF/kQ==}
+  prettier-plugin-tact@0.1.7:
+    resolution: {integrity: sha512-nZ3+n+tMji+zalnLXK5U6KgG1+HS3gb+O+KAW6H54pzDzii422+TK+E4kzQbGLU9ctFWTzli5b6YRqSl4ANHaQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   prettier@3.3.2:
@@ -6219,7 +6219,7 @@ snapshots:
       '@vue/shared': 3.4.29
       estree-walker: 2.0.2
       magic-string: 0.30.10
-      postcss: 8.4.38
+      postcss: 8.4.39
       source-map-js: 1.2.0
 
   '@vue/compiler-ssr@3.4.29':
@@ -8427,7 +8427,7 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-tact@0.1.6:
+  prettier-plugin-tact@0.1.7:
     dependencies:
       tree-sitter: 0.21.1
       tree-sitter-tact: https://codeload.github.com/tact-lang/tree-sitter-tact/tar.gz/91cc49a83f4f0b3a756bf7d0e65403a9cf757003(tree-sitter@0.21.1)

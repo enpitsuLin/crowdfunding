@@ -7,7 +7,8 @@
     "start": "blueprint run deployCrowdfundingFactory",
     "build": "blueprint build CrowdfundingFactory",
     "test": "vitest",
-    "prettier": "prettier"
+    "prettier": "prettier",
+    "format": "prettier ./**/*.tact -w"
   },
   "devDependencies": {
     "@ton/blueprint": "^0.21.0",
@@ -18,7 +19,7 @@
     "@ton/ton": "^13.11.2",
     "@types/node": "^20.14.9",
     "prettier": "^3.3.2",
-    "prettier-plugin-tact": "^0.1.6",
+    "prettier-plugin-tact": "^0.1.7",
     "ts-node": "^10.9.2"
   }
 }
