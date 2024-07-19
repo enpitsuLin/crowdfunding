@@ -11,14 +11,14 @@
     "format": "prettier ./**/*.tact -w"
   },
   "devDependencies": {
-    "@ton/blueprint": "^0.21.0",
+    "@ton/blueprint": "^0.22.0",
     "@ton/core": "~0.56.3",
     "@ton/crypto": "^3.2.0",
     "@ton/sandbox": "^0.20.0",
     "@ton/test-utils": "^0.4.2",
-    "@ton/ton": "^13.11.2",
-    "@types/node": "^20.14.9",
-    "prettier": "^3.3.2",
+    "@ton/ton": "^14.0.0",
+    "@types/node": "^20.14.11",
+    "prettier": "^3.3.3",
     "prettier-plugin-tact": "^0.1.7",
     "ts-node": "^10.9.2"
   }
